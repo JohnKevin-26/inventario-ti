@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventário TI - Gestão de Colaboradores</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Menu Lateral -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <h2>Inventário TI</h2>
+                <span>Equipe de Infra</span>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="{{ url_for('inicio') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('listar_equipamentos') }}">Equipamentos</a></li>
+                <li><a href="{{ url_for('colaboradores') }}" class="active">Colaboradores</a></li>
+                <li><a href="{{ url_for('atribuicoes') }}">Atribuições</a></li>
+                <li><a href="{{ url_for('manutencao') }}">Manutenção</a></li>
+                <li><a href="{{ url_for('estoque') }}">Estoque</a></li>
+                <li><a href="{{ url_for('relatorios') }}">Relatórios</a></li>
+                <li><a href="{{ url_for('configuracoes') }}">Configurações</a></li>
+            </ul>
+        </aside>
+
+        <!-- Conteúdo Principal -->
+        <main class="main-content">
+            <header class="top-header">
+                <h1>Gestão de Colaboradores</h1>
+                <div class="user-info">
+                    <span>Usuário: <strong>Kevin TI</strong></span>
+                </div>
+            </header>
+
+            <section class="dashboard-section" style="display: grid; grid-template-columns: 1fr 2fr; gap: 24px;">
+                <!-- Formulário para Cadastrar Colaborador -->
+                <div class="form-container" style="background: #0f172a; padding: 20px; border-radius: 8px; border: 1px solid var(--border-color); height: fit-content;">
+                    <h3 style="margin-bottom: 16px;">Novo Colaborador</h3>
+                    <form action="{{ url_for('colaboradores') }}" method="POST">
+                        <div class="form-group" style="margin-bottom: 14px;">
+                            <label for="nome" style="display: block; margin-bottom: 6px;">Nome Completo</label>
+                            <input type="text" id="nome" name="nome" placeholder="Ex: Carlos Silva" required style="width: 100%; padding: 10px; background: #1e293b; color: white; border: 1px solid var(--border-color); border-radius: 4px;">
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 14px;">
+                            <label for="cargo" style="display: block; margin-bottom: 6px;">Cargo</label>
+                            <input type="text" id="cargo" name="cargo" placeholder="Ex: Analista Financeiro" style="width: 100%; padding: 10px; background: #1e293b; color: white; border: 1px solid var(--border-color); border-radius: 4px;">
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 14px;">
+                            <label for="departamento" style="display: block; margin-bottom: 6px;">Departamento</label>
+                            <input type="text" id="departamento" name="departamento" placeholder="Ex: Financeiro, RH, TI" style="width: 100%; padding: 10px; background: #1e293b; color: white; border: 1px solid var(--border-color); border-radius: 4px;">
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 20px;">
+                            <label for="email" style="display: block; margin-bottom: 6px;">E-mail Corporativo</label>
+                            <input type="email" id="email" name="email" placeholder="carlos.silva@empresa.com" style="width: 100%; padding: 10px; background: #1e293b; color: white; border: 1px solid var(--border-color); border-radius: 4px;">
+                        </div>
+
+                        <button type="submit" class="btn-action" style="width: 100%; padding: 12px; cursor: pointer;">Cadastrar Colaborador</button>
+                    </form>
+                </div>
+
+                <!-- Tabela de Listagem de Colaboradores -->
+                <div class="recent-activities">
+                    <h3>Colaboradores Registrados</h3>
+                    <div class="table-responsive" style="margin-top: 14px;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Nome</th>
+                                    <th>Cargo / Departamento</th>
+                                    <th>E-mail</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if colaboradores %}
+                                    {% for c in colaboradores %}
+                                    <tr>
+                                        <td><strong>{{ c.nome }}</strong></td>
+                                        <td>
+                                            {{ c.cargo or 'Não informado' }}
+                                            {% if c.departamento %}
+                                                <br><span style="font-size: 0.8rem; color: #3b82f6;">🏢 {{ c.departamento }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ c.email or '-' }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="3" style="text-align: center; color: var(--text-muted); padding: 20px;">
+                                            Nenhum colaborador cadastrado até o momento.
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+</html>

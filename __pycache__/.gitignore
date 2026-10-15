@@ -1,0 +1,14 @@
+# Ambientes Virtuais
+.venv/
+venv/
+
+# Cache do Python
+__pycache__/
+*.py[cod]
+
+# Banco de dados local e executáveis
+inventario.db
+ngrok.exe
+
+# VS Code
+.vscode/

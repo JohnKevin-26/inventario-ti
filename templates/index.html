@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventário TI - Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Importando a biblioteca Chart.js para gráficos profissionais -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Menu Lateral -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <h2>Inventário TI</h2>
+                <span>Equipe de Infra</span>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="#" class="active">Dashboard</a></li>
+                <li><a href="{{ url_for('listar_equipamentos') }}">Equipamentos</a></li>
+                <li><a href="{{ url_for('colaboradores') }}">Colaboradores</a></li>
+                <li><a href="{{ url_for('atribuicoes') }}">Atribuições</a></li>
+                <li><a href="{{ url_for('manutencao') }}">Manutenção</a></li>
+                <li><a href="{{ url_for('estoque') }}">Estoque</a></li>
+                <li><a href="{{ url_for('relatorios') }}">Relatórios</a></li>
+                <li><a href="{{ url_for('configuracoes') }}">Configurações</a></li>
+            </ul>
+        </aside>
+
+        <!-- Conteúdo Principal -->
+        <main class="main-content">
+            <header class="top-header">
+                <h1>Dashboard</h1>
+                <div class="user-info">
+                    <span>🔔 Notificações (0)</span>
+                    <span>Usuário: <strong>Kevin TI</strong></span>
+                </div>
+            </header>
+
+            <section class="dashboard-section">
+                <div class="welcome-card">
+                    <h2>Bem-vindo ao Sistema de Inventário de TI</h2>
+                    <p>Gerencie equipamentos, colaboradores e movimentações de forma organizada e moderna.</p>
+                </div>
+
+                <!-- Ações Rápidas -->
+                <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+    <a href="{{ url_for('novo_equipamento') }}" class="btn-action" style="padding: 10px 16px; background: #2563eb; color: white; text-decoration: none; border-radius: 6px;">+ Novo Equipamento</a>
+    <a href="{{ url_for('movimentacao') }}" class="btn-action" style="padding: 10px 16px; background: #334155; color: white; text-decoration: none; border-radius: 6px;">+ Registrar Movimentação</a>
+    <a href="{{ url_for('relatorios') }}" class="btn-action" style="padding: 10px 16px; background: #334155; color: white; text-decoration: none; border-radius: 6px;">📊 Gerar Relatório</a>
+</div>
+
+                <!-- Cards de Indicadores -->
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px;">
+    <div class="card" style="background: #0f172a; padding: 20px; border-radius: 8px; border: 1px solid var(--border-color);">
+        <span style="color: var(--text-muted); font-size: 0.9rem;">Total de Equipamentos</span>
+        <h2 style="font-size: 2rem; margin-top: 5px; color: #3b82f6;">{{ total_equipamentos }}</h2>
+    </div>
+
+    <div class="card" style="background: #0f172a; padding: 20px; border-radius: 8px; border: 1px solid var(--border-color);">
+        <span style="color: var(--text-muted); font-size: 0.9rem;">Em Uso</span>
+        <h2 style="font-size: 2rem; margin-top: 5px; color: #10b981;">{{ total_em_uso }}</h2>
+    </div>
+
+    <div class="card" style="background: #0f172a; padding: 20px; border-radius: 8px; border: 1px solid var(--border-color);">
+        <span style="color: var(--text-muted); font-size: 0.9rem;">Disponíveis</span>
+        <h2 style="font-size: 2rem; margin-top: 5px; color: #f59e0b;">{{ total_disponivel }}</h2>
+    </div>
+
+    <div class="card" style="background: #0f172a; padding: 20px; border-radius: 8px; border: 1px solid var(--border-color);">
+        <span style="color: var(--text-muted); font-size: 0.9rem;">Em Manutenção</span>
+        <h2 style="font-size: 2rem; margin-top: 5px; color: #ef4444;">{{ total_manutencao }}</h2>
+    </div>
+</div>
+
+                <!-- Seção de Gráficos e Estatísticas -->
+                <div class="charts-section">
+                    <div class="chart-container">
+                        <h3>Distribuição de Equipamentos por Status</h3>
+                        <div class="canvas-wrapper">
+                            <canvas id="statusChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Seção de Atividades Recentes -->
+                <div class="recent-activities" style="background: #0f172a; padding: 20px; border-radius: 8px; border: 1px solid var(--border-color); margin-top: 24px;">
+    <h3>Últimos Equipamentos Cadastrados</h3>
+    <div class="table-responsive" style="margin-top: 14px;">
+        <table>
+            <thead>
+                <tr>
+                    <th>Patrimônio</th>
+                    <th>Tipo</th>
+                    <th>Fabricante / Modelo</th>
+                    <th>Setor / Colaborador</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if ultimos_equipamentos %}
+                    {% for eq in ultimos_equipamentos %}
+                    <tr>
+                        <td><strong>{{ eq.patrimonio }}</strong></td>
+                        <td>{{ eq.tipo }}</td>
+                        <td>{{ eq.fabricante }} {{ eq.modelo }}</td>
+                        <td>
+                            {{ eq.setor }}
+                            {% if eq.nome_colaborador %}
+                                <br><span style="font-size: 0.8rem; color: #3b82f6;">👤 {{ eq.nome_colaborador }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if eq.status == 'Disponível' %}
+                                <span class="badge badge-avail">{{ eq.status }}</span>
+                            {% elif eq.status == 'Em Uso' %}
+                                <span class="badge badge-use">{{ eq.status }}</span>
+                            {% else %}
+                                <span class="badge badge-maint">{{ eq.status }}</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 20px;">
+                            Nenhum equipamento registrado no sistema ainda.
+                        </td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+    <!-- Script para renderizar o Gráfico de Pizza -->
+    <script>
+        const ctx = document.getElementById('statusChart').getContext('2d');
+        const statusChart = new Chart(ctx, {
+            type: 'doughnut', // Gráfico de rosca (estilo pizza moderno)
+            data: {
+                labels: ['Em Uso', 'Disponíveis', 'Em Manutenção'],
+                datasets: [{
+                    data: [1, 2, 1], // Dados temporários de exemplo
+                    backgroundColor: [
+                        '#3b82f6', // Azul elétrico
+                        '#22c55e', // Verde
+                        '#eab308'  // Amarelo
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            color: '#94a3b8',
+                            font: { size: 12 }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

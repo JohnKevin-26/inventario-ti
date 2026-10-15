@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventário TI - Lista de Equipamentos</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Menu Lateral -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <h2>Inventário TI</h2>
+                <span>Equipe de Infra</span>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="{{ url_for('inicio') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('listar_equipamentos') }}" class="active">Equipamentos</a></li>
+                <li><a href="{{ url_for('colaboradores') }}">Colaboradores</a></li>
+                <li><a href="{{ url_for('atribuicoes') }}">Atribuições</a></li>
+                <li><a href="{{ url_for('manutencao') }}">Manutenção</a></li>
+                <li><a href="{{ url_for('estoque') }}">Estoque</a></li>
+                <li><a href="{{ url_for('relatorios') }}">Relatorios</a></li>
+                <li><a href="{{ url_for('configuracoes') }}">Configurações</a></li>
+            </ul>
+        </aside>
+
+        <!-- Conteúdo Principal -->
+        <main class="main-content">
+            <header class="top-header">
+                <h1>Gestão de Equipamentos</h1>
+                <div class="user-info">
+                    <a href="{{ url_for('novo_equipamento') }}" class="btn-action" style="margin: 0; padding: 8px 16px; text-decoration: none;">＋ Novo Equipamento</a>
+                </div>
+            </header>
+
+            <section class="dashboard-section">
+                <!-- Barra de Pesquisa por Colaborador, Patrimônio ou Setor -->
+                <div style="margin-bottom: 20px; background: #0f172a; padding: 16px; border-radius: 8px; border: 1px solid var(--border-color);">
+                    <form method="GET" action="{{ url_for('listar_equipamentos') }}" style="display: flex; gap: 10px;">
+                        <input type="text" name="q" value="{{ termo_busca if termo_busca else '' }}" placeholder="Pesquisar por colaborador, patrimônio, setor ou tipo..." style="flex: 1; padding: 10px; background: #1e293b; color: white; border: 1px solid var(--border-color); border-radius: 4px;">
+                        <button type="submit" class="btn-action" style="padding: 10px 20px; cursor: pointer;">🔍 Pesquisar</button>
+                        {% if termo_busca %}
+                            <a href="{{ url_for('listar_equipamentos') }}" style="padding: 10px 16px; background: #334155; color: white; text-decoration: none; border-radius: 4px; display: flex; align-items: center;">Limpar</a>
+                        {% endif %}
+                    </form>
+                </div>
+
+                <div class="recent-activities">
+                    <h3>Equipamentos Cadastrados no Sistema</h3>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Patrimônio</th>
+                                    <th>Tipo</th>
+                                    <th>Fabricante / Modelo</th>
+                                    <th>Setor / Colaborador</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if equipamentos %}
+                                    {% for eq in equipamentos %}
+                                    <tr>
+                                        <td><strong>{{ eq.patrimonio }}</strong></td>
+                                        <td>{{ eq.tipo }}</td>
+                                        <td>{{ eq.fabricante }} {{ eq.modelo }}</td>
+                                        <td>
+                                            {{ eq.setor }}
+                                            {% if eq.nome_colaborador %}
+                                                <br><span style="font-size: 0.8rem; color: #3b82f6;">👤 {{ eq.nome_colaborador }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if eq.status == 'Disponível' %}
+                                                <span class="badge badge-avail">{{ eq.status }}</span>
+                                            {% elif eq.status == 'Em Uso' %}
+                                                <span class="badge badge-use">{{ eq.status }}</span>
+                                            {% else %}
+                                                <span class="badge badge-maint">{{ eq.status }}</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 20px;">
+                                            Nenhum equipamento encontrado com esses critérios.
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+</html>

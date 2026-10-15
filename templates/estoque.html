@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Inventário TI - Estoque</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-brand"><h2>Inventário TI</h2><span>Equipe de Infra</span></div>
+            <ul class="sidebar-menu">
+                <li><a href="{{ url_for('inicio') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('listar_equipamentos') }}">Equipamentos</a></li>
+                <li><a href="{{ url_for('colaboradores') }}">Colaboradores</a></li>
+                <li><a href="{{ url_for('atribuicoes') }}">Atribuições</a></li>
+                <li><a href="{{ url_for('manutencao') }}">Manutenção</a></li>
+                <li><a href="{{ url_for('estoque') }}" class="active">Estoque</a></li>
+                <li><a href="{{ url_for('relatorios') }}">Relatórios</a></li>
+                <li><a href="{{ url_for('configuracoes') }}">Configurações</a></li>
+            </ul>
+        </aside>
+        <main class="main-content">
+            <header class="top-header"><h1>Estoque Disponível</h1></header>
+            <section class="dashboard-section">
+                <div class="recent-activities">
+                    <h3>Itens Prontos para Uso na Bancada</h3>
+                    <div class="table-responsive">
+                        <table>
+                            <thead><tr><th>Patrimônio</th><th>Tipo</th><th>Fabricante / Modelo</th><th>Setor</th></tr></thead>
+                            <tbody>
+                                {% for e in itens_estoque %}
+                                <tr>
+                                    <td><strong>{{ e.patrimonio }}</strong></td>
+                                    <td>{{ e.tipo }}</td>
+                                    <td>{{ e.fabricante }} {{ e.modelo }}</td>
+                                    <td>{{ e.setor }}</td>
+                                </tr>
+                                {% else %}
+                                <tr><td colspan="4" style="text-align: center; color: var(--text-muted); padding: 20px;">Nenhum item disponível em estoque.</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+</html>

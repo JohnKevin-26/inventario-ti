@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Inventário TI - Manutenção</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-brand"><h2>Inventário TI</h2><span>Equipe de Infra</span></div>
+            <ul class="sidebar-menu">
+                <li><a href="{{ url_for('inicio') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('listar_equipamentos') }}">Equipamentos</a></li>
+                <li><a href="{{ url_for('colaboradores') }}">Colaboradores</a></li>
+                <li><a href="{{ url_for('atribuicoes') }}">Atribuições</a></li>
+                <li><a href="{{ url_for('manutencao') }}" class="active">Manutenção</a></li>
+                <li><a href="{{ url_for('estoque') }}">Estoque</a></li>
+                <li><a href="{{ url_for('relatorios') }}">Relatórios</a></li>
+                <li><a href="{{ url_for('configuracoes') }}">Configurações</a></li>
+            </ul>
+        </aside>
+        <main class="main-content">
+            <header class="top-header"><h1>Central de Manutenção</h1></header>
+            <section class="dashboard-section">
+                <div class="recent-activities">
+                    <h3>Equipamentos em Intervenção Técnica</h3>
+                    <div class="table-responsive">
+                        <table>
+                            <thead><tr><th>Patrimônio</th><th>Tipo</th><th>Modelo</th><th>Setor</th></tr></thead>
+                            <tbody>
+                                {% for m in itens_manutencao %}
+                                <tr>
+                                    <td><strong>{{ m.patrimonio }}</strong></td>
+                                    <td>{{ m.tipo }}</td>
+                                    <td>{{ m.fabricante }} {{ m.modelo }}</td>
+                                    <td>{{ m.setor }}</td>
+                                </tr>
+                                {% else %}
+                                <tr><td colspan="4" style="text-align: center; color: var(--text-muted); padding: 20px;">Nenhum equipamento em manutenção no momento.</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+</html>
